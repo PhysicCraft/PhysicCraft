@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhysCraft - Изучай физику в Minecraft</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0f1a3d;
+            --secondary: #1a2f5f;
+            --accent: #00d4ff;
+            --accent-light: #39e6ff;
+            --text-light: #e8f0ff;
+            --text-muted: #a0bfff;
+            --highlight: #ff6b9d;
+            --success: #00d97e;
+            --warning: #ffb81c;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-light);
+            background: linear-gradient(135deg, var(--primary) 0%, #1a2856 50%, #0d1729 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Анимированный текстурированный фон */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 107, 157, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(255, 255, 255, 0.02) 0px,
+                    rgba(255, 255, 255, 0.02) 1px,
+                    transparent 1px,
+                    transparent 2px
+                );
+            pointer-events: none;
+            z-index: 0;
+            animation: scanlines 8s linear infinite;
+        }
+
+        @keyframes scanlines {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(10px); }
+        }
+
+        /* Контейнер для основного контента */
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 60px 20px 40px;
+            background: linear-gradient(180deg, rgba(15, 26, 61, 0.8) 0%, rgba(26, 47, 95, 0.6) 100%);
+            border-bottom: 2px solid var(--accent);
+            box-shadow: 0 8px 32px rgba(0, 212, 255, 0.15);
+            margin-bottom: 60px;
+            border-radius: 20px;
+            animation: slideDown 0.8s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            font-size: 3.5em;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 50%, var(--highlight) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            text-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+            letter-spacing: 3px;
+        }
+
+        .tagline {
+            font-size: 1.3em;
+            color: var(--text-muted);
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        /* Основные секции */
+        .sections {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        .section {
+            background: linear-gradient(135deg, rgba(26, 47, 95, 0.7) 0%, rgba(15, 26, 61, 0.9) 100%);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.8s ease-out both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section:nth-child(1) { animation-delay: 0.1s; }
+        .section:nth-child(2) { animation-delay: 0.2s; }
+        .section:nth-child(3) { animation-delay: 0.3s; }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 212, 255, 0.1) 0%, transparent 70%);
+            transition: all 0.4s ease-out;
+            z-index: 0;
+        }
+
+        .section:hover::before {
+            top: -20%;
+            right: -20%;
+        }
+
+        .section:hover {
+            transform: translateY(-10px);
+            border-color: var(--accent);
+            box-shadow: 0 20px 50px rgba(0, 212, 255, 0.2), 0 0 40px rgba(0, 212, 255, 0.1);
+        }
+
+        .section-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .section h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: var(--accent-light);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+        }
+
+        .section p {
+            color: var(--text-muted);
+            line-height: 1.8;
+            font-size: 1.05em;
+            margin-bottom: 20px;
+        }
+
+        /* Темы обучения */
+        .topics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .topic-card {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(255, 107, 157, 0.05) 100%);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .topic-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--highlight));
+            border-radius: 15px 15px 0 0;
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+            transform-origin: left;
+        }
+
+        .topic-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .topic-card:hover {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.2) 0%, rgba(255, 107, 157, 0.1) 100%);
+            transform: translateY(-5px);
+            border-color: var(--accent);
+        }
+
+        .topic-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .topic-card h3 {
+            color: var(--accent-light);
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .topic-card p {
+            color: var(--text-muted);
+            font-size: 0.95em;
+        }
+
+        /* Контактная информация */
+        .contact-section {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(255, 107, 157, 0.05) 100%);
+            border: 2px solid var(--accent);
+            border-radius: 20px;
+            padding: 50px;
+            text-align: center;
+            margin-top: 60px;
+            box-shadow: 0 0 50px rgba(0, 212, 255, 0.15);
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
+
+        .contact-section h2 {
+            color: var(--accent-light);
+            font-size: 2.2em;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .contact-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .contact-item {
+            padding: 20px;
+            background: rgba(26, 47, 95, 0.6);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .contact-item:hover {
+            background: rgba(0, 212, 255, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .contact-item h3 {
+            color: var(--success);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .contact-item p {
+            color: var(--text-muted);
+        }
+
+        .contact-item a {
+            color: var(--accent);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-weight: 600;
+        }
+
+        .contact-item a:hover {
+            color: var(--highlight);
+            text-decoration: underline;
+        }
+
+        /* Кнопка CTA */
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            color: var(--primary);
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1em;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(0, 212, 255, 0.5);
+            background: linear-gradient(135deg, var(--accent-light) 0%, var(--accent) 100%);
+        }
+
+        /* Модальное окно */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, rgba(26, 47, 95, 0.95) 0%, rgba(15, 26, 61, 0.95) 100%);
+            margin: auto;
+            padding: 50px;
+            border: 2px solid var(--accent);
+            border-radius: 25px;
+            width: 90%;
+            max-width: 500px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 60px rgba(0, 212, 255, 0.3);
+            animation: slideUp 0.4s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -40%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        .modal-title {
+            color: var(--accent-light);
+            font-size: 1.8em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-align: center;
+        }
+
+        .modal-subtitle {
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 0.95em;
+        }
+
+        /* Форма регистрации */
+        .registration-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            color: var(--text-light);
+            font-weight: 600;
+            font-size: 0.95em;
+            letter-spacing: 1px;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 12px 16px;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 10px;
+            background: rgba(15, 26, 61, 0.8);
+            color: var(--text-light);
+            font-size: 1em;
+            transition: all 0.3s ease;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .form-group input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: rgba(15, 26, 61, 0.95);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+        }
+
+        .form-group select {
+            cursor: pointer;
+        }
+
+        .form-group select option {
+            background: var(--primary);
+            color: var(--text-light);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--accent);
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-weight: 400;
+            font-size: 0.9em;
+        }
+
+        .checkbox-group a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .checkbox-group a:hover {
+            text-decoration: underline;
+        }
+
+        .form-button {
+            padding: 14px 30px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            color: var(--primary);
+            border: none;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.3);
+        }
+
+        .form-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(0, 212, 255, 0.5);
+        }
+
+        .form-button:active {
+            transform: translateY(-1px);
+        }
+
+        /* Успешная регистрация */
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .success-message::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .success-message::-webkit-scrollbar-track {
+            background: rgba(0, 212, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .success-message::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 10px;
+        }
+
+        .success-message::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-light);
+        }
+
+        .success-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            animation: bounce 0.6s ease-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .success-title {
+            color: var(--success);
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .success-text {
+            color: var(--text-light);
+            font-size: 1em;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .download-link {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--success) 0%, #00ff94 100%);
+            color: var(--primary);
+            padding: 15px 35px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1em;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 8px 25px rgba(0, 217, 126, 0.3);
+            margin-top: 20px;
+        }
+
+        .download-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(0, 217, 126, 0.5);
+        }
+
+        .download-text {
+            color: var(--text-muted);
+            font-size: 0.85em;
+            margin-top: 15px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px;
+            margin-top: 80px;
+            border-top: 1px solid rgba(0, 212, 255, 0.2);
+            color: var(--text-muted);
+            background: linear-gradient(180deg, rgba(15, 26, 61, 0.3) 0%, rgba(26, 47, 95, 0.2) 100%);
+        }
+
+        footer p {
+            margin: 5px 0;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            header {
+                padding: 40px 20px 30px;
+            }
+
+            .logo {
+                font-size: 2.5em;
+            }
+
+            .tagline {
+                font-size: 1em;
+            }
+
+            .section {
+                padding: 30px;
+            }
+
+            .section h2 {
+                font-size: 1.5em;
+            }
+
+            .contact-section {
+                padding: 30px;
+            }
+
+            .contact-section h2 {
+                font-size: 1.7em;
+            }
+        }
+
+        /* Светящиеся элементы */
+        .glow {
+            color: var(--accent);
+            text-shadow: 0 0 10px var(--accent), 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+
+        /* Разделитель */
+        .divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            margin: 40px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1 class="logo">⚛️ PhysCraft ⚛️</h1>
+            <p class="tagline">Изучай физику в игровом мире</p>
+        </header>
+
+        <!-- Основные секции -->
+        <div class="sections">
+            <!-- Секция 1: О проекте -->
+            <section class="section">
+                <div class="section-content">
+                    <h2>О проекте</h2>
+                    <p>
+                        PhysCraft — это инновационный образовательный проект, созданный для обучения детей физике в интерактивной и увлекательной форме. Используя возможности Minecraft, мы превращаем абстрактные физические законы в наглядные, понятные и интересные игровые механики.
+                    </p>
+                    <p>
+                        Наша цель — показать, что физика окружает нас везде, и её можно изучать с удовольствием через игру, которую уже любят миллионы детей по всему миру.
+                    </p>
+                    <button class="cta-button" onclick="alert('Спасибо за интерес к PhysCraft!')">Узнать больше</button>
+                </div>
+            </section>
+
+            <!-- Секция 2: Темы обучения -->
+            <section class="section">
+                <div class="section-content">
+                    <h2>Что изучают</h2>
+                    <p>PhysCraft охватывает ключевые темы физики, представленные через интерактивные модули:</p>
+                    <div class="topics">
+                        <div class="topic-card">
+                            <div class="topic-icon">🎯</div>
+                            <h3>Механика</h3>
+                            <p>Движение, силы, ускорение и законы Ньютона</p>
+                        </div>
+                        <div class="topic-card">
+                            <div class="topic-icon">💪</div>
+                            <h3>Сила</h3>
+                            <p>Работа, энергия и трение</p>
+                        </div>
+                        <div class="topic-card">
+                            <div class="topic-icon">⚙️</div>
+                            <h3>ДВС</h3>
+                            <p>Двигатели, мощность и эффективность</p>
+                        </div>
+                        <div class="topic-card">
+                            <div class="topic-icon">💡</div>
+                            <h3>Оптика</h3>
+                            <p>Свет, отражение и преломление</p>
+                        </div>
+                        <div class="topic-card">
+                            <div class="topic-icon">⚡</div>
+                            <h3>Электричество</h3>
+                            <p>Ток, напряжение и сопротивление</p>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- Секция 3: Регистрация -->
+            <section class="section">
+                <div class="section-content">
+                    <h2>Присоединяйся</h2>
+                    <p>
+                        Хотите начать учить физику вместе с PhysCraft? Зарегистрируйтесь сейчас и получите доступ к полной версии проекта!
+                    </p>
+                    <p style="margin-top: 20px;">
+                        Заполните форму ниже, и мы отправим вам все необходимые материалы для начала обучения.
+                    </p>
+                    <button class="cta-button" onclick="openRegistration()" style="margin-top: 20px;">Зарегистрироваться</button>
+                </div>
+            </section>
+        </div>
+
+        <!-- Модальное окно пользовательского соглашения -->
+        <div id="termsModal" class="modal">
+            <div class="modal-content" style="max-height: 85vh; overflow-y: auto;">
+                <h2 class="modal-title">Пользовательское соглашение</h2>
+                <p class="modal-subtitle">PhysCraft - Условия использования</p>
+
+                <div style="text-align: left; color: var(--text-light); line-height: 1.8;">
+                    <h3 style="color: var(--accent-light); margin-top: 20px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">1. Общие положения</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 15px;">
+                        Данное пользовательское соглашение (далее – "Соглашение") определяет условия использования образовательного проекта PhysCraft (далее – "Проект"). Использование Проекта означает полное согласие пользователя со всеми условиями настоящего Соглашения.
+                    </p>
+
+                    <h3 style="color: var(--accent-light); margin-top: 20px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">2. Описание сервиса</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 15px;">
+                        PhysCraft - это образовательный модификационный проект для Minecraft, разработанный в целях обучения физике в интерактивной игровой форме. Проект предоставляет возможность пользователям изучать основные физические законы и явления через игровой процесс.
+                    </p>
+
+                    <h3 style="color: var(--accent-light); margin-top: 20px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">3. Права и обязанности пользователя</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 10px;">
+                        <strong>Пользователь имеет право:</strong>
+                    </p>
+                    <ul style="color: var(--text-muted); margin-bottom: 15px; padding-left: 20px;">
+                        <li>Использовать Проект в личных образовательных целях</li>
+                        <li>Скачивать и устанавливать модификации Проекта</li>
+                        <li>Присоединяться к серверам Проекта</li>
+                        <li>Получать обновления и новые материалы</li>
+                    </ul>
+                    <p style="color: var(--text-muted); margin-bottom: 10px;">
+                        <strong>Пользователь обязан:</strong>
+                    </p>
+                    <ul style="color: var(--text-muted); margin-bottom: 15px; padding-left: 20px;">
+                        <li>Не использовать Проект в коммерческих целях без разрешения</li>
+                        <li>Не распространять модификации без согласия разработчиков</li>
+                        <li>Не использовать Проект для распространения вредоносного ПО</li>
+                        <li>Уважать права других пользователей</li>
+                        <li>Соблюдать правила поведения на серверах</li>
+                    </ul>
+
+                    <h3 style="color: var(--accent-light); margin-top: 20px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">4. Интеллектуальная собственность</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 15px;">
+                        Все содержимое Проекта (включая текст, графику, модификации, дизайн) защищено авторским правом. Использование материалов Проекта возможно только с письменного разрешения разработчиков. Minecraft является собственностью Microsoft Corporation.
+                    </p>
+
+                    <h3 style="color: var(--accent-light); margin-top: 20px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">5. Ограничение ответственности</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 15px;">
+                        Проект предоставляется "как есть". Разработчики не несут ответственности за:
+                    </p>
+                    <ul style="color: var(--text-muted); margin-bottom: 15px; padding-left: 20px;">
+                        <li>Потерю данных пользователя</li>
+                        <li>Ошибки или сбои в работе Проекта</li>
+                        <li>Действия третьих лиц</li>
+                        <li>Косвенный или прямой ущерб</li>
+                    </ul>
+
+                    <h3 style="color: var(--accent-light); margin-top: 20px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">6. Конфиденциальность данных</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 15px;">
+                        Мы собираем следующие данные: имя, адрес электронной почты, номер телефона и возраст в целях регистрации. Данные не будут переданы третьим лицам без согласия пользователя и используются только для улучшения сервиса.
+                    </p>
+
+                    <h3 style="color: var(--accent-light); margin-top: 20px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">7. Модификация соглашения</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 15px;">
+                        Разработчики оставляют за собой право изменять условия данного Соглашения. Пользователи будут уведомлены об изменениях. Продолжение использования Проекта означает согласие с новыми условиями.
+                    </p>
+
+                    <h3 style="color: var(--accent-light); margin-top: 20px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">8. Контакты</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 15px;">
+                        По вопросам, связанным с данным Соглашением, пожалуйста, свяжитесь с нами:<br>
+                        📧 Email: <a href="mailto:info@physcraft.edu" style="color: var(--accent);">info@physcraft.edu</a><br>
+                        💬 Discord: PhysCraft Community
+                    </p>
+
+                    <h3 style="color: var(--accent-light); margin-top: 20px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">9. Вступление в силу</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 15px;">
+                        Данное Соглашение вступает в силу с момента регистрации пользователя в Проекте и действует до прекращения использования сервиса.
+                    </p>
+
+                    <p style="color: var(--success); margin-top: 30px; text-align: center; font-weight: 600;">
+                        Последнее обновление: Май 2024
+                    </p>
+                </div>
+
+                <div style="margin-top: 30px; display: flex; gap: 10px; justify-content: center;">
+                    <button class="cta-button" onclick="acceptTerms()" style="margin: 0;">Я принимаю условия</button>
+                    <button class="cta-button" onclick="closeTerms()" style="margin: 0; background: linear-gradient(135deg, #666, #999);">Отклонить</button>
+                </div>
+            </div>
+        </div>
+        <div id="registrationModal" class="modal">
+            <div class="modal-content">
+                <h2 class="modal-title">Регистрация</h2>
+                <p class="modal-subtitle">Присоединяйтесь к PhysCraft</p>
+                
+                <!-- Форма регистрации -->
+                <form id="registrationForm" class="registration-form" onsubmit="handleRegistration(event)">
+                    <div class="form-group">
+                        <label for="fullname">Полное имя *</label>
+                        <input type="text" id="fullname" name="fullname" placeholder="Иван Иванов" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email адрес *</label>
+                        <input type="email" id="email" name="email" placeholder="ivan@example.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Номер телефона</label>
+                        <input type="tel" id="phone" name="phone" placeholder="+7 (999) 999-99-99">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="age">Возраст *</label>
+                        <input type="number" id="age" name="age" min="6" max="120" placeholder="12" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="level">Уровень знания физики *</label>
+                        <select id="level" name="level" required>
+                            <option value="">Выберите уровень</option>
+                            <option value="beginner">Начинающий</option>
+                            <option value="intermediate">Средний</option>
+                            <option value="advanced">Продвинутый</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="interests">Какие темы вас интересуют? *</label>
+                        <select id="interests" name="interests" required>
+                            <option value="">Выберите тему</option>
+                            <option value="mechanics">Механика</option>
+                            <option value="force">Сила</option>
+                            <option value="engine">ДВС</option>
+                            <option value="optics">Оптика</option>
+                            <option value="electricity">Электричество</option>
+                            <option value="all">Все темы</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="terms" name="terms" required>
+                            <label for="terms">Я согласен с <a href="#" onclick="openTerms(event)" style="color: var(--accent); text-decoration: underline; cursor: pointer;">условиями использования</a></label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="newsletter" name="newsletter">
+                            <label for="newsletter">Подписаться на новости и обновления</label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="form-button">Зарегистрироваться</button>
+                </form>
+
+                <!-- Сообщение об успехе -->
+                <div id="successMessage" class="success-message">
+                    <div class="success-icon">✅</div>
+                    <div class="success-title">Добро пожаловать в PhysCraft!</div>
+                    <p class="success-text">
+                        Ваша регистрация прошла успешно!<br>
+                        Ниже вы найдете IP адрес сервера и инструкцию по установке.
+                    </p>
+
+                    <!-- Информация о сервере -->
+                    <div style="background: rgba(0, 212, 255, 0.1); border: 1px solid var(--accent); border-radius: 15px; padding: 20px; margin: 25px 0; text-align: left;">
+                        <h3 style="color: var(--accent-light); margin-bottom: 15px; text-align: center; text-transform: uppercase; letter-spacing: 1px;">🖥️ IP Адрес Сервера</h3>
+                        <div style="background: rgba(15, 26, 61, 0.8); padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid rgba(0, 212, 255, 0.2);">
+                            <p style="color: var(--text-muted); font-size: 0.85em; margin-bottom: 8px;">Скопируйте этот адрес:</p>
+                            <div style="background: rgba(0, 0, 0, 0.3); padding: 12px; border-radius: 8px; border-left: 3px solid var(--accent);">
+                                <code style="color: var(--accent); font-size: 1.1em; font-weight: 700; word-break: break-all; font-family: 'Courier New', monospace;">physcraft.server.ru:25565</code>
+                            </div>
+                            <button onclick="copyToClipboard('physcraft.server.ru:25565')" style="background: var(--accent); color: var(--primary); border: none; padding: 8px 16px; border-radius: 8px; margin-top: 10px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">📋 Скопировать</button>
+                        </div>
+                    </div>
+
+                    <!-- Инструкция по установке -->
+                    <div style="background: rgba(255, 107, 157, 0.1); border: 1px solid var(--highlight); border-radius: 15px; padding: 20px; margin: 25px 0; text-align: left;">
+                        <h3 style="color: var(--highlight); margin-bottom: 15px; text-align: center; text-transform: uppercase; letter-spacing: 1px;">📖 Инструкция по установке</h3>
+                        
+                        <div style="background: rgba(15, 26, 61, 0.8); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                            <h4 style="color: var(--accent-light); margin-bottom: 10px;">1️⃣ Установите Minecraft Java Edition</h4>
+                            <p style="color: var(--text-muted); font-size: 0.9em; line-height: 1.6;">
+                                Убедитесь, что у вас установлена Java Edition (не Bedrock). Скачайте с <a href="https://launcher.mojang.com/" target="_blank" style="color: var(--accent); text-decoration: none;">официального сайта</a>.
+                            </p>
+                        </div>
+
+                        <div style="background: rgba(15, 26, 61, 0.8); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                            <h4 style="color: var(--accent-light); margin-bottom: 10px;">2️⃣ Установите NeoForge 1.21.1</h4>
+                            <p style="color: var(--text-muted); font-size: 0.9em; margin-bottom: 8px;">
+                                <strong>PhysCraft требует NeoForge версии 1.21.1</strong><br>
+                                • Скачайте <a href="https://neoforged.net/" target="_blank" style="color: var(--accent);">NeoForge Installer</a><br>
+                                • Выберите версию <code style="background: rgba(0, 0, 0, 0.2); padding: 2px 6px; border-radius: 3px; color: var(--accent);">1.21.1</code><br>
+                                • Запустите установщик и выберите "Install client"<br>
+                                • Нажмите OK
+                            </p>
+                        </div>
+
+                        <div style="background: rgba(15, 26, 61, 0.8); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                            <h4 style="color: var(--accent-light); margin-bottom: 10px;">3️⃣ Скачайте и установите PhysCraft моды</h4>
+                            <p style="color: var(--text-muted); font-size: 0.9em; margin-bottom: 8px; line-height: 1.6;">
+                                • Скачайте архив с модами из сообщения выше<br>
+                                • Распакуйте все .jar файлы<br>
+                                • Откройте папку игры: <code style="background: rgba(0, 0, 0, 0.2); padding: 2px 6px; border-radius: 3px; color: var(--accent);">.minecraft/mods</code><br>
+                                • Скопируйте все файлы модов в эту папку
+                            </p>
+                        </div>
+
+                        <div style="background: rgba(15, 26, 61, 0.8); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                            <h4 style="color: var(--accent-light); margin-bottom: 10px;">4️⃣ Запустите Minecraft</h4>
+                            <p style="color: var(--text-muted); font-size: 0.9em; line-height: 1.6;">
+                                • Откройте Minecraft Launcher<br>
+                                • В профилях выберите <code style="background: rgba(0, 0, 0, 0.2); padding: 2px 6px; border-radius: 3px; color: var(--accent);">neoforge-1.21.1</code><br>
+                                • Нажмите Play
+                            </p>
+                        </div>
+
+                        <div style="background: rgba(15, 26, 61, 0.8); padding: 15px; border-radius: 10px;">
+                            <h4 style="color: var(--accent-light); margin-bottom: 10px;">5️⃣ Присоединитесь к серверу</h4>
+                            <p style="color: var(--text-muted); font-size: 0.9em; line-height: 1.6;">
+                                • В главном меню выберите "Multiplayer"<br>
+                                • Нажмите "Add Server"<br>
+                                • В поле "Server Address" вставьте: <code style="background: rgba(0, 0, 0, 0.2); padding: 2px 6px; border-radius: 3px; color: var(--accent);">physcraft.server.ru:25565</code><br>
+                                • Дайте серверу имя (например, "PhysCraft")<br>
+                                • Нажмите "Done" и присоединитесь!
+                            </p>
+                        </div>
+
+                        <div style="background: rgba(0, 217, 126, 0.1); border: 1px solid var(--success); border-radius: 10px; padding: 15px; margin-top: 15px;">
+                            <p style="color: var(--success); font-size: 0.9em; font-weight: 600;">
+                                ✅ Если возникли проблемы, напишите в Discord!
+                            </p>
+                        </div>
+                    </div>
+
+                    <a href="#" onclick="downloadProject(event)" class="download-link">📥 Скачать файл проекта</a>
+                    <p class="download-text">Размер файла: 450 MB | Платформа: Windows, macOS, Linux</p>
+                    <button class="cta-button" onclick="closeRegistration()" style="margin-top: 20px;">Закрыть</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 PhysCraft. Все права защищены.</p>
+        <p>Обучение физике через игру Minecraft</p>
+        <p style="margin-top: 15px; font-size: 0.9em;">Разработано с ❤️ для любопытных умов</p>
+    </footer>
+
+    <script>
+        // Функция копирования текста в буфер обмена
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('✅ IP адрес скопирован в буфер обмена!\n\n' + text);
+            }).catch(err => {
+                alert('❌ Ошибка при копировании: ' + err);
+            });
+        }
+
+        // Открытие окна пользовательского соглашения
+        function openTerms(event) {
+            event.preventDefault();
+            const modal = document.getElementById('termsModal');
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Закрытие окна соглашения
+        function closeTerms() {
+            const modal = document.getElementById('termsModal');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Принятие условий и отмена галочки
+        function acceptTerms() {
+            document.getElementById('terms').checked = true;
+            closeTerms();
+        }
+
+        // Закрытие окна соглашения при клике вне его
+        window.onclick = function(event) {
+            const termsModal = document.getElementById('termsModal');
+            const registrationModal = document.getElementById('registrationModal');
+            
+            if (event.target == termsModal) {
+                closeTerms();
+            }
+            if (event.target == registrationModal) {
+                closeRegistration();
+            }
+        }
+
+        // Открытие модального окна регистрации
+        function openRegistration() {
+            const modal = document.getElementById('registrationModal');
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Закрытие модального окна регистрации
+        function closeRegistration() {
+            const modal = document.getElementById('registrationModal');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+            // Очищаем форму
+            document.getElementById('registrationForm').reset();
+            document.getElementById('successMessage').style.display = 'none';
+            document.getElementById('registrationForm').style.display = 'flex';
+        }
+
+
+
+        // Обработка отправки формы
+        function handleRegistration(event) {
+            event.preventDefault();
+
+            // Получаем данные формы
+            const formData = {
+                fullname: document.getElementById('fullname').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                age: document.getElementById('age').value,
+                level: document.getElementById('level').value,
+                interests: document.getElementById('interests').value,
+                terms: document.getElementById('terms').checked,
+                newsletter: document.getElementById('newsletter').checked,
+                registrationDate: new Date().toLocaleString('ru-RU')
+            };
+
+            // Сохраняем данные в localStorage
+            const registrations = JSON.parse(localStorage.getItem('physcraftRegistrations')) || [];
+            registrations.push(formData);
+            localStorage.setItem('physcraftRegistrations', JSON.stringify(registrations));
+
+            // Логируем данные в консоль
+            console.log('Регистрация пользователя:', formData);
+
+            // Показываем сообщение об успехе
+            document.getElementById('registrationForm').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'block';
+        }
+
+        // Функция скачивания
+        function downloadProject(event) {
+            event.preventDefault();
+
+            // Открываем Google Drive ссылку в новой вкладке
+            window.open('https://drive.google.com/file/d/1A7Qp54wmE5Hknh_Z0RZujmuOxB-09w6I/view?usp=sharing', '_blank');
+            
+            // Показываем сообщение об успехе
+            alert('✅ Спасибо за регистрацию!\n\n📥 Файл PhysCraft откроется в новой вкладке.\n\nНажмите на кнопку "Скачать" в Google Drive, чтобы загрузить проект на ваш компьютер.');
+        }
+
+        // Добавляем интерактивность при загрузке страницы
+        window.addEventListener('load', () => {
+            const cards = document.querySelectorAll('.topic-card');
+            cards.forEach((card, index) => {
+                card.style.animation = `fadeInUp 0.6s ease-out ${0.5 + index * 0.1}s both`;
+            });
+        });
+
+        // Эффект параллакса при движении мыши
+        document.addEventListener('mousemove', (e) => {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                const glow = section.querySelector('::before');
+                if (glow) {
+                    const x = (e.clientX / window.innerWidth) * 100;
+                    const y = (e.clientY / window.innerHeight) * 100;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
